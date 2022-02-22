@@ -13,7 +13,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
         with:
-          node-version: 14
+          node-version: '16.x'
       - name: Build & update version
         run: |
           npm --no-git-tag-version version patch
@@ -21,4 +21,5 @@ jobs:
           npx webpack
       - uses: JS-DevTools/npm-publish@v1
         with:
+          package: './lib/package.json'
           token: ${{ secrets.NPM_TOKEN }}
