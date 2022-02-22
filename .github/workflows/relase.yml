@@ -2,9 +2,9 @@ name: NodeJS with Webpack
 
 on:
   push:
-    branches: [ main ]
+    branches: [ publish ]
   pull_request:
-    branches: [ main ]
+    branches: [ publish ]
 
 jobs:
   build:
@@ -14,9 +14,8 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: '16.x'
-      - name: Build & update version
+      - name: Build
         run: |
-          npm --no-git-tag-version version patch
           npm install
           npx webpack
       - uses: JS-DevTools/npm-publish@v1
