@@ -20,6 +20,7 @@ export class Drop {
     private moveHandler: Handelr[] = [];
     private startHandler: Handelr[] = [];
     private upHandler: Function[] = [];
+    private clickHandler: Function[]= [];
 
     constructor(private el: HTMLElement) {
 
@@ -30,9 +31,20 @@ export class Drop {
         document.addEventListener('mouseup' , this.mouseup.bind(this));
     }
 
-    private onmousedown() {
+    private formatCoordinate(evt: MouseEvent): [number, number] {
+        const [offsetX, offsetY] = this.offset;
+        const x = evt.x - offsetX;
+        const y = evt.y - offsetY;
+        return [x, y];
+    }
+
+    private onmousedown(evt: MouseEvent) {
         this.isMove = true;
         this.isStart = true;
+
+        this.clickHandler.forEach((fn) => {
+            fn(this.formatCoordinate(evt))
+        })
     }
 
     private mousemove(evt: MouseEvent) {
@@ -40,9 +52,7 @@ export class Drop {
             return;
         }
 
-        const [offsetX, offsetY] = this.offset;
-        const x = evt.x - offsetX;
-        const y = evt.y - offsetY;
+        const [x, y] = this.formatCoordinate(evt);
 
         if (this.isStart) {
             this.startHandler.forEach(cb => cb([x, y]));
@@ -52,9 +62,9 @@ export class Drop {
         this.moveHandler.forEach((cb) => cb([x, y]));
     }
 
-    private mouseup() {
+    private mouseup(evt: MouseEvent) {
         if (this.isMove) {
-            this.upHandler.forEach((cb) => cb());
+            this.upHandler.forEach((cb) => cb(this.formatCoordinate(evt)));
         }
         this.isMove = false;
     }
@@ -71,6 +81,11 @@ export class Drop {
 
     public up(cb: Handelr): Drop {
         this.upHandler.push(cb);
+        return this;
+    }
+
+    public click(cb: Handelr): Drop {
+        this.clickHandler.push(cb);
         return this;
     }
 }
